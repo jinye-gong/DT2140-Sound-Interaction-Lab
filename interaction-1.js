@@ -14,6 +14,7 @@ let jsonParams = null;
 // Change here to ("tuono") depending on your wasm file name
 const dspName = "tuono";
 const instance = new FaustWasm2ScriptProcessor(dspName);
+let lastThunderAt = -Infinity;
 
 // output to window or npm package module
 if (typeof module === "undefined") {
@@ -74,7 +75,12 @@ function deviceTurned() {
 function deviceShaken() {
     shaketimer = millis();
     statusLabels[0].style("color", "pink");
-    playAudio();
+    // A short pause keeps one shake from starting overlapping thunder sounds.
+    const now = millis();
+    if (now - lastThunderAt >= 1200) {
+        lastThunderAt = now;
+        playAudio();
+    }
 }
 
 function getMinMaxParam(address) {

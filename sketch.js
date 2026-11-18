@@ -53,6 +53,7 @@ function contextAudioStart() {
 
 
 function setup() {
+  angleMode(DEGREES);
   createCanvas(windowWidth, windowHeight);
 
   setMotionListeners();
@@ -100,10 +101,10 @@ function setup() {
   dSlider2.id("slider2");
   dSlider2.parent(statBox.elt);
 
-  sliders[3] = createP("move threshold");
+  sliders[3] = createP("large movement threshold");
   sliders[3].parent(dSlider2.elt);
 
-  sliders[2] = createSlider(0, 75, 50, 1); //move thresh, 0 - 75, default = 50, step = 1
+  sliders[2] = createSlider(0.5, 30, 10, 0.5); // Increase if small movements trigger a note.
 ///  sliders[2].size(sliderWidth);
   sliders[2].parent(dSlider2.elt);
   sliders[2].style('position', 'unset');

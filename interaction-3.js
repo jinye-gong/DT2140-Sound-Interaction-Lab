@@ -14,6 +14,7 @@ let jsonParams = null;
 // Change here to ("tuono") depending on your wasm file name
 const dspName = "brass";
 const instance = new FaustWasm2ScriptProcessor(dspName);
+let brassOffTimer = null;
 
 // output to window or npm package module
 if (typeof module === "undefined") {
@@ -59,13 +60,15 @@ function rotationChange(rotx, roty, rotz) {
 }
 
 function mousePressed() {
-    playAudio(mouseX/windowWidth)
+    triggerBrass();
     // Use this for debugging from the desktop!
 }
 
 function deviceMoved() {
     movetimer = millis();
     statusLabels[2].style("color", "pink");
+    // p5 only calls this after the move threshold set by the slider is crossed.
+    triggerBrass();
 }
 
 function deviceTurned() {
@@ -74,7 +77,12 @@ function deviceTurned() {
 function deviceShaken() {
     shaketimer = millis();
     statusLabels[0].style("color", "pink");
-    playAudio();
+}
+
+function triggerBrass() {
+    playAudio(0.7);
+    clearTimeout(brassOffTimer);
+    brassOffTimer = setTimeout(() => playAudio(0), 300);
 }
 
 function getMinMaxParam(address) {
@@ -102,7 +110,6 @@ function playAudio(pressure) {
     if (audioContext.state === 'suspended') {
         return;
     }
-    console.log(pressure)
     dspNode.setParamValue("/brass/blower/pressure", pressure)
 }
 

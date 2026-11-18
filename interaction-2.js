@@ -14,6 +14,8 @@ let jsonParams = null;
 // Change here to ("tuono") depending on your wasm file name
 const dspName = "bells";
 const instance = new FaustWasm2ScriptProcessor(dspName);
+let bellTiltSide = 0;
+let lastBellAt = -Infinity;
 
 // output to window or npm package module
 if (typeof module === "undefined") {
@@ -56,10 +58,23 @@ function accelerationChange(accx, accy, accz) {
 }
 
 function rotationChange(rotx, roty, rotz) {
+    // Tilt the flat phone from side to side, like swinging a handbell.
+    // Returning near the centre arms the next strike.
+    if (Math.abs(roty) < 12) {
+        bellTiltSide = 0;
+        return;
+    }
+    const side = roty > 28 ? 1 : roty < -28 ? -1 : 0;
+    const now = millis();
+    if (side !== 0 && side !== bellTiltSide && now - lastBellAt >= 350) {
+        bellTiltSide = side;
+        lastBellAt = now;
+        playAudio();
+    }
 }
 
 function mousePressed() {
-    // playAudio()
+    playAudio();
     // Use this for debugging from the desktop!
 }
 
@@ -74,7 +89,6 @@ function deviceTurned() {
 function deviceShaken() {
     shaketimer = millis();
     statusLabels[0].style("color", "pink");
-    playAudio();
 }
 
 function getMinMaxParam(address) {
